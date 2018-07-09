@@ -1,8 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-
+const {key} = require('../config/config');
 let app = express();
-
+const jwt = require('jsonwebtoken');
 var Usuario = require('../models/usuario');
 
 app.post('/', (req, res) => {
@@ -14,11 +14,14 @@ app.post('/', (req, res) => {
             if (!bcrypt.compareSync(body.password, usuario.password)) {
                return res.status(400).json({message:'error password'});
             }
-            res.status(200).json({
-                ok:true,
-                usuario,
-                id:usuario._id
+            jwt.sign({usuario},key,{expiresIn:5000},(err , token) => {
+                res.status(200).json({
+                    message: 'usuario guardado',
+                    usuario,
+                    token
+                });
             });
+           
         }
     ).catch( error => res.status(500).json({message:'error no email encontrado'}));
 });

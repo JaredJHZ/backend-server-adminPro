@@ -8,7 +8,11 @@ const {key} = require('../config/config');
 var Usuario = require('../models/usuario');
 //obtener usuarios
 app.get('/', (req,res) => {
+    let desde = req.query.desde || 0;
+    desde = Number(desde); 
     Usuario.find({},'nombre email img role')
+    .skip(desde)
+    .limit(5)
     .exec((err, usuarios) => {
         if (err) {
             return res.status(500).json({
@@ -43,6 +47,7 @@ app.post('/', (req,res) => {
 
     });
 
+    
     usuario.save( (err,usuarioGuardado) => {
         if (err) {
             return res.status(400).json({
@@ -51,14 +56,8 @@ app.post('/', (req,res) => {
                 error: err
             });
         }
-
-        jwt.sign({usuarioGuardado},key,{expiresIn:5000},(err , token) => {
-            res.status(200).json({
-                message: 'usuario guardado',
-                usuarioGuardado,
-                token
-            });
-        });
+        res.status(200).json({message:'Usuario creado', usuarioGuardado});
+      
     });
    }
 

@@ -9,11 +9,12 @@ let authToken = (req , res , next) => {
             if (err) {
                 res.status(401).json({messsage:'invalid token'});
             } else{
-                console.log(decoded);
+                req.usuario = decoded;
                 next();
             }
         })
     } else {
+        
         res.status(401).json({message:'error en el token'});
     }
 };
